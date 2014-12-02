@@ -1,0 +1,15 @@
+Package: DataTablesR
+Type: Package
+Title: DataTablesR
+Version: 0.1.0
+Date: 2014-12-01
+Author: Andreas Blaette
+Maintainer: Andreas Blaette <andreas.blaette@uni-due.de>
+Depends:
+    methods
+Suggests:
+    knitr
+VignetteBuilder: knitr
+LazyData: yes
+Description: Wrapper for DataTables (js-library)
+License: GPL-2 | file LICENSE
