@@ -3,16 +3,21 @@
 \name{as.DataTables}
 \alias{as.DataTables}
 \alias{as.DataTables,data.frame-method}
+\alias{show,html-method}
 \title{turn object into html using DataTables}
 \usage{
 as.DataTables(object, ...)
 
-\S4method{as.DataTables}{data.frame}(object)
+\S4method{as.DataTables}{data.frame}(object, align = NULL)
+
+\S4method{show}{html}(object)
 }
 \arguments{
 \item{object}{the relevant object}
 
 \item{...}{further arguments}
+
+\item{align}{defaults to null, if supplied, same length as table}
 }
 \value{
 a html object
