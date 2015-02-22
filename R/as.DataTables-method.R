@@ -4,6 +4,7 @@
 #'
 #' @param object the relevant object 
 #' @param align defaults to null, if supplied, same length as table
+#' @param jsDir pass a specified path
 #' @param ... further arguments
 #' @return a html object
 #' @exportMethod as.DataTables
@@ -12,18 +13,19 @@
 setGeneric("as.DataTables", function(object, ...){standardGeneric("as.DataTables")})
 
 #' @rdname as.DataTables
-setMethod("as.DataTables", "data.frame", function(object, align=NULL){
-  lookUp <- c("jquery.dataTables.css", "jquery.js", "jquery.dataTables.min.js")
-  dataTablesPath <- sapply(lookUp, function(x) system.file("js", x, package="DataTablesR"))
-  #  dataTablesPath["jquery.dataTables.css"] <- "/Users/blaette/Lab/github/DataTablesR/inst/js/jquery.dataTables.css"
+setMethod("as.DataTables", "data.frame", function(object, align=NULL, jsDir=NULL){
   htmlTemplate <- scan(
     file=system.file("templates", "dataTableTemplate.html", package="DataTablesR"),
     what="character", sep="\n", quiet=TRUE
   )
   htmlTable <- paste(htmlTemplate, collapse="\n")
-  for (x in names(dataTablesPath)){
-    htmlTable <- gsub(x, dataTablesPath[x], htmlTable)
+  lookUp <- c("jquery.dataTables.css", "jquery.js", "jquery.dataTables.min.js")
+  if (is.null(jsDir)){
+    dataTablesPath <- sapply(lookUp, function(x) system.file("js", x, package="DataTablesR"))    
+  } else {
+    dataTablesPath <- sapply(lookUp, function(x) file.path(jsDir, x))
   }
+  for (x in names(dataTablesPath)) htmlTable <- gsub(x, dataTablesPath[x], htmlTable)
   if (!is.null(align)){
     if (length(align) != ncol(object)) {
       warning("if supplied, length of align needs to correspond to number of columns")
