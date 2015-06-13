@@ -14,4 +14,5 @@ NULL
 #' @import methods
 NULL
 
-setOldClass("html")
+setOldClass("DataTablesDir")
+# setOldClass("html")

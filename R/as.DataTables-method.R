@@ -1,3 +1,6 @@
+#' @include DataTablesDir-class.R
+NULL
+
 #' turn object into html using DataTables
 #'
 #' a story to be told
@@ -14,6 +17,8 @@ setGeneric("as.DataTables", function(object, ...){standardGeneric("as.DataTables
 
 #' @rdname as.DataTables
 setMethod("as.DataTables", "data.frame", function(object, align=NULL, jsDir=NULL){
+  tmpDir <- tempdir()
+  tmpFile <- file.path(tmpDir, "index.html")
   htmlTemplate <- scan(
     file=system.file("templates", "dataTableTemplate.html", package="DataTablesR"),
     what="character", sep="\n", quiet=TRUE
@@ -21,11 +26,19 @@ setMethod("as.DataTables", "data.frame", function(object, align=NULL, jsDir=NULL
   htmlTable <- paste(htmlTemplate, collapse="\n")
   lookUp <- c("jquery.dataTables.css", "jquery.js", "jquery.dataTables.min.js")
   if (is.null(jsDir)){
-    dataTablesPath <- sapply(lookUp, function(x) system.file("js", x, package="DataTablesR"))    
+    dataTablesPath <- sapply(
+      lookUp,
+      function(x) {
+        file.copy(
+          from=system.file("js", x, package="DataTablesR"),
+          to=tmpDir
+        )
+      })    
   } else {
     dataTablesPath <- sapply(lookUp, function(x) file.path(jsDir, x))
+    for (x in names(dataTablesPath)) htmlTable <- gsub(x, dataTablesPath[x], htmlTable)
   }
-  for (x in names(dataTablesPath)) htmlTable <- gsub(x, dataTablesPath[x], htmlTable)
+  
   if (!is.null(align)){
     if (length(align) != ncol(object)) {
       warning("if supplied, length of align needs to correspond to number of columns")
@@ -61,17 +74,8 @@ setMethod("as.DataTables", "data.frame", function(object, align=NULL, jsDir=NULL
     })
   tbody <- paste(tbody, collapse="")
   htmlTable <- gsub("TBODY", tbody, htmlTable)
-  class(htmlTable) <- "html"
-  htmlTable
+  class(tmpDir) <- "DataTablesDir"
+  cat(htmlTable, file=tmpFile)
+  tmpDir
 })
-
-#' @rdname as.DataTables
-#' @exportMethod show
-setMethod("show", "html", function(object){
-  tmpFile <- tempfile(fileext=".html")
-  cat(object, file=tmpFile)
-  browseURL(tmpFile)
-})
-
-
 
